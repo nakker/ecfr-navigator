@@ -2,7 +2,7 @@
 
 ## Core Features Overview
 
-The eCFR Analyzer provides comprehensive tools for analyzing federal regulations through automated data retrieval, AI-powered insights, and interactive visualizations.
+The eCFR Navigator provides comprehensive tools for analyzing federal regulations through automated data retrieval, AI-powered insights, and interactive visualizations.
 
 ## Automated Data Retrieval
 

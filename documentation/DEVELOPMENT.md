@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers the development workflow, best practices, and common tasks for working on the eCFR Analyzer project.
+This guide covers the development workflow, best practices, and common tasks for working on the eCFR Navigator project.
 
 ## Table of Contents
 

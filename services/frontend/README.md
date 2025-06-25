@@ -1,6 +1,6 @@
 # Frontend Service
 
-The Frontend Service is a modern web application for the eCFR Analyzer project, providing an intuitive interface for searching, browsing, and analyzing federal regulations.
+The Frontend Service is a modern web application for the eCFR Navigator project, providing an intuitive interface for searching, browsing, and analyzing federal regulations.
 
 ## Overview
 
@@ -114,7 +114,7 @@ frontend/
 NEXT_PUBLIC_API_URL=http://localhost:3001
 
 # Application Settings
-NEXT_PUBLIC_APP_NAME="eCFR Analyzer"
+NEXT_PUBLIC_APP_NAME="eCFR Navigator"
 NEXT_PUBLIC_REFRESH_INTERVAL=30000  # 30 seconds
 
 # Feature Flags

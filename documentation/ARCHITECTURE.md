@@ -1,10 +1,10 @@
-# eCFR Analyzer Architecture
+# eCFR Navigator Architecture
 
-This document provides a comprehensive overview of the eCFR Analyzer system architecture, including services, data flow, and key design decisions.
+This document provides a comprehensive overview of the eCFR Navigator system architecture, including services, data flow, and key design decisions.
 
 ## System Overview
 
-The eCFR Analyzer is a microservices-based application designed to download, parse, store, and analyze the entire US Code of Federal Regulations. It provides search capabilities, metrics generation, and AI-powered insights to help identify opportunities for regulatory improvement.
+The eCFR Navigator is a microservices-based application designed to download, parse, store, and analyze the entire US Code of Federal Regulations. It provides search capabilities, metrics generation, and AI-powered insights to help identify opportunities for regulatory improvement.
 
 ## Architecture Diagram
 
@@ -452,4 +452,4 @@ User Message → Frontend → Backend API → Gemini API
 
 ## Conclusion
 
-The eCFR Analyzer architecture is designed for reliability, scalability, and maintainability. The microservices approach allows for independent evolution of components while maintaining a cohesive system. The use of modern technologies and patterns ensures the system can handle the large scale of federal regulations data while providing a responsive user experience.
+The eCFR Navigator architecture is designed for reliability, scalability, and maintainability. The microservices approach allows for independent evolution of components while maintaining a cohesive system. The use of modern technologies and patterns ensures the system can handle the large scale of federal regulations data while providing a responsive user experience.

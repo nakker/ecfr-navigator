@@ -1,6 +1,6 @@
 # Backend API Service
 
-The Backend API Service is the core REST API server for the eCFR Analyzer project. It provides endpoints for searching, retrieving, and analyzing federal regulations data stored in MongoDB and indexed in Elasticsearch.
+The Backend API Service is the core REST API server for the eCFR Navigator project. It provides endpoints for searching, retrieving, and analyzing federal regulations data stored in MongoDB and indexed in Elasticsearch.
 
 ## Overview
 

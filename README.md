@@ -1,10 +1,10 @@
-# eCFR Analyzer
+# eCFR Navigator
 
 A comprehensive web application for analyzing US Federal Regulations to provide insights for deregulation efforts.
 
 ## Overview
 
-The eCFR Analyzer downloads, stores, and analyzes the entire Electronic Code of Federal Regulations (eCFR) - over 200,000 pages of federal regulations across ~150 agencies. It provides powerful search capabilities, AI-powered analysis, and analytical metrics to help identify areas for potential regulatory improvement.
+The eCFR Navigator downloads, stores, and analyzes the entire Electronic Code of Federal Regulations (eCFR) - over 200,000 pages of federal regulations across ~150 agencies. It provides powerful search capabilities, AI-powered analysis, and analytical metrics to help identify areas for potential regulatory improvement.
 
 ## Features
 
@@ -64,7 +64,7 @@ The initial build may take 5-10 minutes. Initial data download will take 30-60 m
 
 ## Architecture
 
-The eCFR Analyzer uses a microservices architecture with four main services:
+The eCFR Navigator uses a microservices architecture with four main services:
 
 - **Frontend**: Next.js React application with Material-UI
 - **Backend API**: Express.js REST API server

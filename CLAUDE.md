@@ -1,4 +1,4 @@
-# eCFR Analyzer Project
+# eCFR Navigator Project
 
 https://github.com/sam-berry/ecfr-analyzer
 

@@ -1,7 +1,7 @@
 {
   "name": "ecfr-analyzer-tests",
   "version": "1.0.0",
-  "description": "Test suite for eCFR Analyzer",
+  "description": "Test suite for eCFR Navigator",
   "scripts": {
     "test": "jest --config=jest.config.js",
     "test:frontend": "jest --config=jest.config.frontend.js",

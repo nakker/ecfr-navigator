@@ -1,6 +1,6 @@
 # Customizing AI Analysis Prompts
 
-The eCFR Analyzer uses AI to analyze regulatory sections and provide summaries, antiquated scores, and business unfriendliness scores. You can customize the prompts used for these analyses through environment variables.
+The eCFR Navigator uses AI to analyze regulatory sections and provide summaries, antiquated scores, and business unfriendliness scores. You can customize the prompts used for these analyses through environment variables.
 
 ## Available Prompt Environment Variables
 

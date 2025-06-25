@@ -1,6 +1,6 @@
-# eCFR Analyzer Test Suite
+# eCFR Navigator Test Suite
 
-Comprehensive test suite for the eCFR Analyzer project with unit, integration, and e2e tests.
+Comprehensive test suite for the eCFR Navigator project with unit, integration, and e2e tests.
 
 ## Test Structure
 

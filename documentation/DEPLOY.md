@@ -1,4 +1,4 @@
-# eCFR Analyzer Deployment Guide
+# eCFR Navigator Deployment Guide
 
 ## Prerequisites
 

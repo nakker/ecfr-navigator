@@ -2,7 +2,7 @@
 
 ## Overview
 
-The eCFR Analyzer now includes a comprehensive settings page that allows administrators to monitor and control the data-refresh and data-analysis services.
+The eCFR Navigator now includes a comprehensive settings page that allows administrators to monitor and control the data-refresh and data-analysis services.
 
 ## Accessing Settings
 

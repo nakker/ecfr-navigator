@@ -1,7 +1,7 @@
 # Grok API Setup Guide
 
 ## Overview
-The eCFR Analyzer uses Grok AI for analyzing regulatory sections. This guide explains how to set up and configure the Grok API.
+The eCFR Navigator uses Grok AI for analyzing regulatory sections. This guide explains how to set up and configure the Grok API.
 
 ## Getting Started
 

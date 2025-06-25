@@ -2,7 +2,7 @@
 
 ## Overview
 
-The eCFR Analyzer uses a microservices architecture with four Docker containers working together to download, parse, analyze, and present federal regulations data.
+The eCFR Navigator uses a microservices architecture with four Docker containers working together to download, parse, analyze, and present federal regulations data.
 
 ## Core Services
 

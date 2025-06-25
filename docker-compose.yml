@@ -1,0 +1,147 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: ecfr-mongodb
+    restart: unless-stopped
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    command: mongod --quiet
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d:ro
+      - ./mongo-config/mongod.conf:/etc/mongod.conf:ro
+    networks:
+      - ecfr-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: ecfr-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    networks:
+      - ecfr-network
+
+  backend:
+    build: 
+      context: ./services
+      dockerfile: backend/Dockerfile
+    container_name: ecfr-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      GROK_API_KEY: ${GROK_API_KEY}
+      CHAT_SYSTEM_PROMPT: ${CHAT_SYSTEM_PROMPT}
+      CHAT_DEFAULT_MODEL: ${CHAT_DEFAULT_MODEL:-grok-3-mini}
+      CHAT_TIMEOUT_SECONDS: ${CHAT_TIMEOUT_SECONDS}
+    depends_on:
+      - mongodb
+      - elasticsearch
+    networks:
+      - ecfr-network
+
+  frontend:
+    build: 
+      context: ./services
+      dockerfile: frontend/Dockerfile
+    container_name: ecfr-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      REACT_APP_API_URL: http://backend:3001
+      NEXT_PUBLIC_CHAT_SYSTEM_PROMPT: ${CHAT_SYSTEM_PROMPT}
+      NEXT_PUBLIC_CHAT_DEFAULT_MODEL: ${CHAT_DEFAULT_MODEL}
+      NEXT_PUBLIC_CHAT_TIMEOUT_SECONDS: ${CHAT_TIMEOUT_SECONDS}
+    depends_on:
+      - backend
+    networks:
+      - ecfr-network
+
+  data-refresh:
+    build: 
+      context: ./services
+      dockerfile: data-refresh/Dockerfile
+    container_name: ecfr-data-refresh
+    restart: "no"
+    ports:
+      - "3005:3005"  # Health check port
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      REFRESH_INTERVAL_HOURS: ${REFRESH_INTERVAL_HOURS:-24}
+      INITIAL_DOWNLOAD_DELAY_MINUTES: ${INITIAL_DOWNLOAD_DELAY_MINUTES:-5}
+    depends_on:
+      - mongodb
+      - elasticsearch
+    networks:
+      - ecfr-network
+    volumes:
+      - ./services/data-refresh:/app
+      - /app/node_modules
+      - ecfr-data:/data
+
+  data-analysis:
+    build: 
+      context: ./services
+      dockerfile: data-analysis/Dockerfile
+    container_name: ecfr-data-analysis
+    restart: unless-stopped
+    ports:
+      - "3003:3003"  # Internal API port for thread management
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      ANALYSIS_STARTUP_DELAY_MINUTES: ${ANALYSIS_STARTUP_DELAY_MINUTES:-2}
+      GROK_API_KEY: ${GROK_API_KEY}
+      ANALYSIS_MODEL: ${ANALYSIS_MODEL:-grok-3-mini}
+      ANALYSIS_BATCH_SIZE: ${ANALYSIS_BATCH_SIZE:-5}
+      ANALYSIS_TIMEOUT_SECONDS: ${ANALYSIS_TIMEOUT_SECONDS:-120}
+      ANALYSIS_RATE_LIMIT: ${ANALYSIS_RATE_LIMIT:-15}
+      ANALYSIS_MAX_TOKENS: ${ANALYSIS_MAX_TOKENS:-800}
+      ANALYSIS_PROMPT_SUMMARY: ${ANALYSIS_PROMPT_SUMMARY}
+      ANALYSIS_PROMPT_ANTIQUATED: ${ANALYSIS_PROMPT_ANTIQUATED}
+      ANALYSIS_PROMPT_BUSINESS_UNFRIENDLY: ${ANALYSIS_PROMPT_BUSINESS_UNFRIENDLY}
+    depends_on:
+      - mongodb      
+    networks:
+      - ecfr-network
+    volumes:
+      - ./services/data-analysis:/app
+      - /app/node_modules
+
+networks:
+  ecfr-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  elasticsearch-data:
+  ecfr-data:

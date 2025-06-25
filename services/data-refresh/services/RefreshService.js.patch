@@ -1,0 +1,14 @@
+--- RefreshService.js.old
++++ RefreshService.js.new
+@@ -105,8 +105,9 @@
+         try {
+           const response = await axios.get(url, {
+             responseType: 'text',
+-            timeout: 300000, // 5 minutes timeout for large files
+-            maxContentLength: 500 * 1024 * 1024, // 500MB max
++            timeout: 600000, // 10 minutes timeout for large files
++            maxContentLength: Infinity, // No limit on content length
++            maxBodyLength: Infinity, // No limit on body length
+             headers: {
+               'Accept-Encoding': 'gzip, deflate',
+               'User-Agent': 'eCFR-Analyzer/1.0'

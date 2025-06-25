@@ -1,0 +1,67 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env
+.env.*
+.vscode
+.idea
+coverage
+.nyc_output
+*.log
+
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+coverage
+*.tsbuildinfo
+
+# Environment files
+.env*
+!.env.example
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+temp
+tmp
+.tmp
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Testing
+test-results
+test-start*.js
+
+# Development files that shouldn't be in container
+startup*.log
+*.local

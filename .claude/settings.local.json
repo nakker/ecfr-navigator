@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(./sync-shared.sh:*)",
+      "Bash(docker-compose:*)",
+      "Bash(curl:*)",
+      "Bash(./sync-shared.sh:*)",
+      "Bash(docker-compose restart:*)",
+      "Bash(docker-compose exec:*)",
+      "Bash(grep:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(docker system prune:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:www.ecfr.gov)",
+      "Bash(docker-compose logs:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "Bash(docker logs:*)",
+      "Bash(cp:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(docker-compose:*)",
+      "Bash(npm install)",
+      "Bash(npm test:*)"
+    ],
+    "deny": []
+  }
+}

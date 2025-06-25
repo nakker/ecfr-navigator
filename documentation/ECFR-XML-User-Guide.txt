@@ -1,0 +1,541 @@
+The content of the XML e-CFR data provided on the FDsys Bulk Data Repository is derived from that the SGML content on which the print version is based.  In creating the XML content, the SGML content is converted to well-formed XML with minimal intervention.  The resulting XML was built this way for the following reasons:
+1.   It is a faithful representation of the CFR, which corresponds to the original SGML mark- up.
+2.   It describes the structure of the CFR, including the large structure (parts, articles, corrections, table of contents, etc.), the document structure (titles, paragraphs, sections, etc.), and semantic structure (CFR references, agency names, contact information, amendment text, etc.)
+3.   The SGML version on which it is based is almost fully XML-compliant since all element tags have corresponding closing tags as required in XML.
+The schema of the incoming SGML content remains essentially unchanged as it is converted to XML without changing any element names. Such an approach maintains fidelity to the original data, and reduces errors that might occur in schema interpretation or further data manipulation.
+The changes required to convert the SGML into well-formed XML are as follows:
+1.   All embedded XML prolog lines of the form <?xml version="1.0" ?> are removed.
+2.   All character entities of the form "&<name>;" are replaced with Unicode equivalents or replaced with something else functional.
+3.   An XML prolog line is prepended to the file and looks like this:
+*    <?xml version="1.0" encoding="ISO-8859-1"?>
+4.   Links to e-CFR graphics images are adjusted so that their root is as follows:
+*     www.ecfr.gov
+5.   Standard front matter, such as, the title page and "U.S. Government Official Edition Notice" are normally already removed in the SGML version.  In the rare circumstance where it is not removed in the SGML version, it is not copied to the XML version.
+6.   <STYLE> elements are removed from the XML version.
+Other than the changes listed above, no SGML tags that are removed or collapsed in the resulting
+XML.
+
+2.1. Outer XML Structure
+The XML file has the following overall structure:
+
+
+
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<DLPSTEXTCLASS>
+<HEADER>
+<!-- Header information -->
+</HEADER>
+<TEXT>
+<BODY>
+
+
+<ECFRBRWS>
+<!-- e-CFR content -->
+</ECFRBRWS>
+</BODY>
+</TEXT>
+</DLPSTEXTCLASS>
+
+
+2.2. Header Content
+There is normally, very little information in the header section. Usually it only contains the number and the title as can be seen in the following example:
+
+
+
+<FILEDESC>
+<TITLESTMT>
+<TITLE>Title 1: General Provisions</TITLE>
+<AUTHOR TYPE="nameinv"></AUTHOR>
+</TITLESTMT>
+<PUBLICATIONSTMT>
+<PUBLISHER></PUBLISHER>
+<PUBPLACE></PUBPLACE>
+<IDNO TYPE="title">1</IDNO>
+<DATE></DATE>
+</PUBLICATIONSTMT>
+<SERIESSTMT>
+<TITLE></TITLE>
+</SERIESSTMT>
+</FILEDESC>
+<PROFILEDESC>
+<TEXTCLASS>
+<KEYWORDS></KEYWORDS>
+</TEXTCLASS>
+</PROFILEDESC>
+
+
+2.3. Sectioning of Body Content
+The sectioning of content is managed through the use of <DIV#> elements, where # represents a digit such as 1, 2, 3, etc.  For example, the first <DIV#> element in the file should be for the Title itself and looks like this:
+<DIV1 N="1" NODE="5:1" TYPE="TITLE">
+This indicates that the top level section is a Title and all other <DIV#> elements will fall in nested layers within this one.  For the <DIV1> element, the value of attribute, N, is the volume number.  For titles that have no volumes, this is "1".  The value of the attribute NODE is a structured value for internal use and may be changed at any time, so it should not be relied on.
+In other <DIV#> elements, the attribute, N, will be the "number" of the section and the attribute, "TYPE", will be the type of section.  For example, for sub-chapter B, the <DIV#> element might read:
+<DIV4 N="B" NODE="1:1.0.1.2" TYPE="SUBCHAP">
+Now since the <DIV#> elements are nested within the parent sections that they belong the overall structure may look something like this:
+
+
+<DIV1 N="1" NODE="1:1" TYPE="TITLE">
+�
+<DIV3 N="I" NODE="1:1.0.1" TYPE="CHAPTER">
+�
+<DIV4 N="A" NODE="1:1.0.1.1" TYPE="SUBCHAP">
+�
+<DIV5 N="1" NODE="1:1.0.1.1.1" TYPE="PART">
+�
+<DIV8 N="� 1.1" NODE="1:1.0.1.1.1.0.1.1" TYPE="SECTION">
+�
+</DIV8>
+�
+</DIV5>
+<DIV5 N="2" NODE="1:1.0.1.1.2" TYPE="PART">
+�
+<DIV8 N="� 2.1" NODE="1:1.0.1.1.2.0.1.1" TYPE="SECTION">
+�
+</DIV8>
+<DIV8 N="� 2.2" NODE="1:1.0.1.1.2.0.1.2" TYPE="SECTION">
+�
+</DIV8>
+<DIV8 N="� 2.3" NODE="1:1.0.1.1.2.0.1.3" TYPE="SECTION">
+�
+</DIV8>
+�
+</DIV5>
+<DIV5 N="3" NODE="1:1.0.1.1.3" TYPE="PART">
+�
+<DIV8 N="� 3.1" NODE="1:1.0.1.1.3.0.1.1" TYPE="SECTION">
+�
+</DIV8>
+<DIV8 N="� 3.2" NODE="1:1.0.1.1.3.0.1.2" TYPE="SECTION">
+�
+</DIV8>
+<DIV8 N="� 3.3" NODE="1:1.0.1.1.3.0.1.3" TYPE="SECTION">
+�
+</DIV8>
+�
+</DIV5>
+�
+</DIV4>
+<DIV4 N="B" NODE="1:1.0.1.2" TYPE="SUBCHAP">
+�
+
+
+Note that though there are <DIV8> elements, there are no <DIV6> or <DIV7> elements in the example above.  While the higher number DIV elements are always nested within lower number DIV elements, they are not required to be sequential.
+The title of a section is almost always given by the <HEAD> element immediately following the
+<DIV#> element, for example:
+
+
+
+<DIV4 N="B" NODE="5:1.0.1.2" TYPE="SUBCHAP">
+<HEAD>SUBCHAPTER B�CIVIL SERVICE REGULATIONS</HEAD>
+Note that the <DIV#> elements are consistent in their meaning as shown below:
+1.   DIV1 => TYPE="TITLE"
+2.   DIV2 => TYPE="SUBTITLE"
+3.   DIV3 => TYPE="CHAPTER"
+4.   DIV4 => TYPE="SUBCHAP"
+5.   DIV5 => TYPE="PART"
+6.   DIV6 => TYPE="SUBPART"
+7.   DIV7 => TYPE=" SUBJGRP"
+8.   DIV8 => TYPE="SECTION"
+9.   DIV9 => TYPE="APPENDIX"
+
+2.4. Paragraphs
+The <P> element and other elements that are closely related to it (examples: <PSPACE>, <FP>,
+<P-1>, etc.) are used extensively in the content sections to separate paragraphs.  While paragraphs are often itemized points in an enumerated list with nested sub-lists, the numbering scheme is hardcoded in the content and there is no nesting of elements to preserve indentation levels.  For example:
+
+
+<DIV8 N="� 151.101" NODE="5:1.0.1.2.12.0.1.1" TYPE="SECTION">
+<HEAD>� 151.101   Definitions.</HEAD>
+<P>In this part: </P>
+<P>(a) <I>State</I> means a State or territory or possession of the United States.
+</P>
+<P>(b) <I>State or local agency</I> means:</P>
+<P>(1) The executive branch of a State, municipality, or other political subdivision of a State, or an agency or department thereof; or</P>
+<P>(2) The executive branch of the District of Columbia, or an agency or department thereof.</P>
+<P>(c) <I>Federal agency</I> means an executive agency or other agency of the United
+States, but does not include a member bank of the Federal Reserve System; </P>
+<P>(d) <I>State or local officer or employee</I> means an individual employed by a State or local agency whose principal employment is in connection with an activity which is financed in whole or in part by loans or grants made by the United States or a Federal agency but does not include�</P>
+<P>(1) An individual who exercises no functions in connection with that activity.</P>
+<P>(2) An individual employed by an educational or research institution, establishment, agency, or system which is supported in whole or in part by�</P>
+<P>(i) A State or political subdivision thereof;</P>
+<P>(ii) The District of Columbia; or</P>
+<P>(iii) A recognized religious, philanthropic, or cultural organization.
+</P>
+<P>(e) <I>Political party</I> means a National political party, a State political party, and an affiliated organization. </P>
+<P>(f) <I>Election</I> includes a primary, special, and general election. </P>
+<P>(g) <I>Nonpartisan election</I> means an election at which none of the candidates is to be nominated or elected as representing a political party any of whose candidates for Presidential elector receives votes in the last preceding election at which Presidential electors were selected. </P>
+<P>(h) <I>Partisan</I> when used as an adjective refers to a political party. </P>
+<P>(i) <I>Elective office</I> means any office which is voted upon at an election as defined at � 151.101(f), above, but does not include political party office. </P>
+<CITA TYPE="N">[40 FR 42733, Sept. 16, 1975, as amended at 79 FR 25484, May 5, 2014]
+</CITA>
+</DIV8>
+
+
+The proper indentation of the items in the aforementioned example should probably be as follows:
+(a) State means a State or territory � (b) State or local agency means:
+(1) The executive branch of a State, municipality, � (2) The executive of the District of Columbia, �
+(c) Federal agency means and executive agency or� (d) State or local officer or employee means an�
+(1) An individual who exercises no functions in � (2) An individual employed by and educational or �
+(i)  A State or political subdivision thereof; (ii) The District of Columbia; or
+      (iii)A recognized religious, philanthropic, or � (e) Political party means a National political party, � (f) Election includes a primary, special, and �
+(g) Nonpartisan election means an election at which � (h) Partisan when used as an adjective refers to �
+             (i)  Elective office means any office which is voted � However, this is not deducible from the XML syntax alone.
+
+2.5. Images
+If an e-CFR Title has images, they will be in either GIF and/or PDF format.  They will usually be referenced as in the following example:
+
+
+
+<DIV9 N="Appendix A" NODE="2:1.2.25.3.2.11.51.1.16" TYPE="APPENDIX">
+<HEAD>Appendix A to Part 3485�Covered Transactions</HEAD>
+<img src="http://www.ecfr.gov/graphics/er28mr12.000.gif"/>
+<P/>
+<a href="http://www.ecfr.gov/graphics/pdfs/er28mr12.000.pdf">View or download
+PDF</a>
+<P/><P/>
+</DIV9>
+
+
+
+As per the example above there are usually both a low-resolution image in GIF format and a
+high-resolution version by the same base name in PDF format. These links will access the correct images online. However, they are also available in a graphics ZIP archive on the FDsys Bulk
+Data Repository in the same location as the XML rendition. All the GIF files are in the
+"graphics" folder within the ZIP file and all the PDF files are within the "pdfs" subfolder.
+*    ZIP archive
+o graphics (folder)
+?  er28mr12.000.gif
+?  �
+?  pdfs (folder)
+*    er28mr12.000.pdf
+*    �
+
+3.  Alphabetical List of XML Elements
+
+The XML elements that appear in the Titles of the e-CFR are listed below with a brief description of their meaning.  In some cases, the description may include one of the following in square brackets, i.e. [], to show where they are typically used. Note that additional elements may appear in addition to the elements listed below.
+*    B � Back Matter
+*    C � Table of Contents
+*    F � Front Matter
+*    T � General textual content
+
+3.1. a
+
+This element defines a hyperlink, which is used to link a URL. The most important attribute of the <a> element is the "href" attribute, which indicates the link's destination. This is most frequently used to link to an image in the e-CFR Titles.
+
+
+<a href="http://www.ecfr.gov/graphics/pdfs/er28mr12.000.pdf">View or download
+PDF</a>
+
+
+3.2. ABBR
+This element presents a list of abbreviations or acronyms. It is only ever observed inside the
+<CFRTOC> element. [C]
+
+
+
+<ABBR>
+<HED>Abbreviations Used in This Chapter:</HED>
+<P>ATF = <I>Alcohol, Tobacco and Firearms.</I> </P>
+<P>TD = <I>Treasury Decision.</I></P>
+<P>TTB = <I>Alcohol and Tobacco Tax and Trade Bureau.</I></P>
+</ABBR>
+
+
+3.3. AC
+The accent function places certain diacritical marks at letters. The <AC> tag follows the letter modified. Usage is <AC T='d'> where d is a single digit 0-9:
+0.   ?
+1.   �
+2.   �
+3.   �
+4.   �
+5.    
+6.   �
+7.   �
+8.   ?
+9.   �
+These can be used for any letters. Entities (e.g., &eacute;) can accomplish the same effects and are preferable, because they are more intelligible.
+
+
+
+<FP>and, <I>x<AC T="8"/></I> is the sample mean; n is the number of samples;
+and x<E T="52">i</E> is the i<E T="51">th</E> sample; Or,</FP>
+
+3.4. ALPHHD
+This is an alphabet separator heading in agency indexes, i.e. the <SUBCHIND> element. [T, B]
+
+<HED>INDEX I�RULES RELATING TO PATENTS</HED>
+<EDNOTE>
+<HED>Editorial Note:</HED><PSPACE>This listing is provided for informational purposes only. It is compiled and kept current by the Department of Commerce. This index is updated as of July 1, 2012.</PSPACE></EDNOTE>
+<SECHD>Section</SECHD>
+<ALPHHD>A</ALPHHD>
+<SUBJECT>Abandoned applications:</SUBJECT>
+<SUBJ1L>Abandonment by failure to prosecute</SUBJ1L>
+<PT>1.135</PT>
+<SUBJ1L>Abandonment during interference</SUBJ1L>
+
+
+
+
+
+
+
+
+
+
+
+3.5. AMDDATE
+This is the amendment date of the title.  This is always found just inside the <ECFRBRWS>
+element.
+
+
+<BODY>
+<ECFRBRWS>
+<AMDDATE>May 1, 2014</AMDDATE>
+<DIV1 N="1" NODE="37:1" TYPE="TITLE">
+
+
+
+
+3.6. APP
+This indicates an appendix, exhibit or supplement heading as contents entry. [C, T]
+
+
+<CFRTOC>
+<EDNOTE>
+<HED>Editorial Note:</HED>
+     <PSPACE>Title 5 of the United States Code was revised and enacted into positive law by Pub. L. 89�554, Sept. 6, 1966. New citations for obsolete references to
+
+
+
+
+sections of 5 U.S.C. appearing in this volume may be found in a redesignation table under Title 5, Government Organization and Employees, United States Code.</PSPACE>
+</EDNOTE>
+<PTHD>Part</PTHD>
+<CHAPTI>
+<SUBJECT><E T="04">chapter ii</E>�Merit Systems Protection Board</SUBJECT>
+<PG>1200</PG>
+<SUBJECT><E T="04">chapter iii</E>�Office of Management and Budget</SUBJECT>
+<PG>1300</PG>
+�
+</CHAPTI>
+<APP>Appendix A to 5 CFR Chapter XIV�Current Addresses and Geographic Jurisdictions.
+</APP>
+  <APP>Appendix B to 5 CFR Chapter XIV�Memorandum Describing the Authority and Assigned Responsibilities of the General Counsel of the Federal Labor Relations Authority.</APP>
+<CHAPTI>
+     <SUBJECT><E T="04">chapter xv</E>�Office of Administration, Executive Office of the President</SUBJECT>
+<PG>2500</PG>
+<SUBJECT><E T="04">chapter xvi</E>�Office of Government Ethics</SUBJECT>
+<PG>2600</PG>
+�
+</CHAPTI>
+</CFRTOC>
+
+
+3.7. APPRO
+This is an OMB number approval note in parentheses. [T]
+
+
+
+<DIV8 N="� 1305.3" NODE="5:3.0.2.2.5.0.48.3" TYPE="SECTION">
+<HEAD>� 1305.3   Procedures in the event of a demand for disclosure.</HEAD>
+<P>(a) Whenever a demand is made upon an employee or former employee of OMB ... </P>
+<P>(b) If information or material is sought by a demand in any case or ... </P>
+<P>(c) If response to a demand is required before instructions from the ... </P>
+<APPRO TYPE="N">(Approved by the Office of Management and Budget under control
+number 0348�0056)</APPRO>
+</DIV8>
+
+3.8. AUTH
+This is an authority statement that usually contains a mini-header.  Almost every <DIV#>
+element has one.
+
+
+
+<DIV5 N="1" NODE="37:1.0.1.1.1" TYPE="PART">
+<HEAD>PART 1�RULES OF PRACTICE IN PATENT CASES</HEAD>
+<AUTH>
+<HED>Authority:</HED>
+<PSPACE>35 U.S.C. 2(b)(2), unless otherwise noted.</PSPACE>
+</AUTH>
+<SOURCE>
+<HED>Source:</HED>
+<PSPACE>24 FR 10332, Dec. 22, 1959, unless otherwise noted.</PSPACE>
+</SOURCE>
+3.9. AUTHOR
+This element designates an author although there are currently no examples of where an author is actually named.  The TYPE attribute has been observed to have the value "nameinv" or "author".
+
+
+
+<TITLESTMT>
+<TITLE>Title 37: Patents, Trademarks, and Copyrights</TITLE>
+<AUTHOR TYPE="nameinv"></AUTHOR>
+</TITLESTMT>
+
+3.10. B
+This element represents a span of text stylistically different from normal text, without conveying any special importance or relevance. It is typically used for keywords in a summary, product names in a review, or other spans of text whose typical presentation would be boldfaced.
+Another example of its use is to mark the lead sentence of each paragraph of an article. Note:  The <B> element should not be confused with the <strong> or <em> elements. The
+<strong> element represents text of certain importance, while <em> puts some emphasis on the
+text.  The <b> element does not convey such special semantic information; it is used when the others do not fit.
+
+<P>(ii) $10,000; whichever is higher, unless the employee has elected a Living Benefit under subpart K of this part. Effective for pay periods beginning on or after October
+30, 1998, there is no maximum BIA. <B>Note:</B> If an employee's pay is �capped� by law, the amount of the Basic insurance is based on the capped amount, which is the amount the employee is actually being paid. It is not based on the amount the employee's pay would have been without the pay cap.</P>
+
+
+
+3.11. BCAP
+This is a bottom caption for a graphic or mathpac insert. [T]
+
+
+<img src="http://www.ecfr.gov/graphics/ec27oc91.004.gif"/>
+<BCAP><E T="15">Figure D-4�Ladder Far from Wall</E></BCAP>
+
+
+3.12. BODY
+This element encapsulates the body content of an e-CFR Title and occurs exactly once per e- CFR XML document.  It occurs separately (outside of) the <header> element but is found within a <TEXT> element.  See Section 2.1
+
+3.13. BOXTXT
+This marks text surrounded with a box. [T]
+
+
+
+
+<BOXTXT>
+  <P>Drugs with thyroid hormone activity, alone or together with other therapeutic agents, have been used for the treatment of obesity. In euthyroid patients, doses within the range of daily hormonal requirements are ineffective for weight reduction. Larger doses may produce serious or even life-threatening manifestations of toxicity, particularly when given in association with sympathomimetic amines such as those used for their anorectic effects.</P>
+</BOXTXT>
+
+
+3.14. br
+The <br> tag inserts a single line break.
+
+
+
+<br/>�Department of the Environment.
+<br/>�Department of General Services.
+<br/>�Department of Housing and Community Development.
+<br/>�Department of Human Resources.
+<br/>�Department of Licensing and Regulation.
+<br/>�Department of Natural Resources.
+<br/>�Department of Public Safety and Correctional Services.
+<br/>�Department of Personnel.
+<br/>�Department of Transportation.
+
+
+3.15. CFRTOC
+A table of contents is given within this element.  It is only ever seen inside a <DIV1> element.
+
+
+
+<CFRTOC>
+<PTHD>Part</PTHD>
+<CHAPTI>
+     <SUBJECT><E T="04">chapter i</E>�United States Patent and Trademark Office, Department of Commerce</SUBJECT>
+<PG>1</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter ii</E>�U.S. Copyright Office, Library of
+Congress</SUBJECT>
+<PG>201</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter iii</E>�Copyright Royalty Board, Library of
+Congress</SUBJECT>
+<PG>301</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter iv</E>�Assistant Secretary for Technology Policy,
+Department of Commerce</SUBJECT>
+<PG>401</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter v</E>�Under Secretary for Technology, Department of
+Commerce</SUBJECT>
+<PG>501</PG>
+</CHAPTI>
+</CFRTOC>
+
+
+3.16. CHAPNO
+This is a chapter number and has special use in table of contents and a few others cases. [C, B]
+
+
+
+<DIV2 N="Subtitle E" NODE="41:4.1" TYPE="SUBTITLE">
+<HEAD>Subtitle E�Federal Information Resources Management Regulations System</HEAD>
+<CHAPNO>CHAPTER 201 [RESERVED]</CHAPNO>
+</DIV2>
+
+
+3.17. CHAPTI
+This element has special use in table of contents, i.e. <CFRTOC>.  It is a single element within a parts list. [F, C]
+
+
+
+<CFRTOC>
+<PTHD>Part</PTHD>
+<CHAPTI>
+     <SUBJECT><E T="04">chapter i</E>�United States Patent and Trademark Office, Department of Commerce</SUBJECT>
+<PG>1</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter ii</E>�U.S. Copyright Office, Library of
+Congress</SUBJECT>
+<PG>201</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter iii</E>�Copyright Royalty Board, Library of
+Congress</SUBJECT>
+<PG>301</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter iv</E>�Assistant Secretary for Technology Policy,
+Department of Commerce</SUBJECT>
+<PG>401</PG>
+</CHAPTI>
+<CHAPTI>
+<SUBJECT><E T="04">chapter v</E>�Under Secretary for Technology, Department of
+Commerce</SUBJECT>
+<PG>501</PG>
+</CHAPTI>
+</CFRTOC>
+
+
+3.18. CITA
+This is a source note at the section level. Alone, it marks a one-column citation.
+
+
+
+<DIV8 N="� 1.3" NODE="37:1.0.1.1.1.1.66.3" TYPE="SECTION">
+<HEAD>� 1.3   Business to be conducted with decorum and courtesy.</HEAD>
+
+  <P>Applicants and their attorneys or agents are required to conduct their business with the United States Patent and Trademark Office with decorum and courtesy. Papers presented in violation of this requirement will be submitted to the Director and will not be entered. A notice of the non-entry of the paper will be provided. Complaints against examiners and other employees must be made in correspondence separate from other papers.</P>
+<CITA TYPE="N">[68 FR 38624, June 30, 2003]</CITA>
+</DIV8>
+
+3.19. CROSSREF
+This is a cross reference note.
+
+<DIV5 N="93" NODE="29:1.1.1.1.38" TYPE="PART">
+<HEAD>PART 93�NEW RESTRICTIONS ON LOBBYING</HEAD>
+<AUTH>
+<HED>Authority:</HED>
+<PSPACE>Section 319, Public Law 101-121 (31 U.S.C. 1352); 5 U.S.C. 301,
+Reorganization Plan Number 6 of 1950.</PSPACE>
+</AUTH>
+<SOURCE>
+<HED>Source:</HED>
+<PSPACE>55 FR 6737 and 6751, Feb. 26, 1990, unless otherwise noted.</PSPACE>
+</SOURCE>
+<CROSSREF>
+<HED>Cross Reference:</HED>
+     <P>See also Office of Management and Budget notice published at 54 FR 52306, December 20, 1989.</P>
+</CROSSREF>
+
+3.20. DATE
+This is a date specification.  It has been found to be empty all the time.
+
+
+<PUBLICATIONSTMT>
+<PUBLISHER></PUBLISHER>
+<PUBPLACE></PUBPLACE>
+<IDNO TYPE="title">37</IDNO>
+<DATE></DATE>
+</PUBLICATIONSTMT>
+
+

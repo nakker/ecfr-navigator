@@ -19,7 +19,7 @@ The eCFR Navigator is a microservices-based application designed to download, pa
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
 │  Frontend       │────▶│  Backend API    │◀────│  External APIs  │
-│  (Next.js)      │     │  (Express)      │     │  (Grok/Gemini)  │
+│  (Next.js)      │     │  (Express)      │     │  (Grok)  │
 │  Port 3000      │     │  Port 3001      │     │                 │
 └─────────────────┘     └────────┬────────┘     └─────────────────┘
                                  │
@@ -185,19 +185,6 @@ The eCFR Navigator is a microservices-based application designed to download, pa
 - Model: `grok-3-mini`
 - Rate limit: 15 requests/minute
 - Temperature: 0.3 (consistent results)
-
-### Gemini API (Google)
-
-**Purpose**: Interactive chat about regulations
-
-**Features**:
-- Context-aware responses
-- Regulation explanations
-- Multiple model support
-
-**Configuration**:
-- Model: `gemini-2.0-flash-exp`
-- Timeout: 120 seconds
 
 ## Key Design Patterns
 

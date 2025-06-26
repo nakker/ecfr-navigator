@@ -50,7 +50,7 @@ cd ecfr-analyzer
 cp .env.example .env
 
 # Edit .env with your configuration
-# Required: GEMINI_API_KEY and GROK_API_KEY for AI features
+# Required: GROK_API_KEY for AI features
 ```
 
 ### 2. Sync Shared Code

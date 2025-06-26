@@ -20,7 +20,7 @@ The eCFR Navigator uses a microservices architecture with seven Docker container
 ### Backend API (Port 3001)
 - **Express.js REST API**
 - Central gateway for all API requests
-- Integrates with Gemini (chat) and Grok (analysis) APIs
+- Integrates with Grok APIs
 - Accessed via Nginx proxy at /api/*
 
 ### Data Refresh Service
@@ -80,6 +80,5 @@ govinfo.gov → Data Refresh → MongoDB → Data Analysis → AI APIs
 ## External Integrations
 
 - **Grok API**: Section-level AI analysis (antiquated/business scores)
-- **Gemini API**: Interactive chat about regulations
 - **govinfo.gov**: Source for CFR XML data
 - **eCFR API**: Version history tracking

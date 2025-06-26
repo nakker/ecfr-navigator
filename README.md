@@ -9,7 +9,7 @@ The eCFR Navigator downloads, stores, and analyzes the entire Electronic Code of
 ## Features
 
 - **Full-text search** across all federal regulations with Elasticsearch
-- **AI-powered analysis** using Grok and Gemini models to assess regulatory impact
+- **AI-powered analysis** using Grok models to assess regulatory impact
 - **Analytics dashboard** with word counts, complexity scores, and readability metrics
 - **Interactive chat** for asking questions about specific regulations
 - **Automated section analysis** identifying antiquated and business-unfriendly regulations
@@ -39,9 +39,8 @@ cp .env.example .env
 ```
 
 **Important**: To enable AI features, you need API keys:
-- **Gemini API** (for chat): Get a free key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 - **Grok API** (for analysis): Get access from [x.ai](https://x.ai)
-- Set `GEMINI_API_KEY` and `GROK_API_KEY` in your `.env` file
+- Set GROK_API_KEY` in your `.env` file
 
 3. Build and start the services:
 ```bash

@@ -2,20 +2,26 @@
 
 ## Overview
 
-The eCFR Navigator uses a microservices architecture with four Docker containers working together to download, parse, analyze, and present federal regulations data.
+The eCFR Navigator uses a microservices architecture with seven Docker containers working together to download, parse, analyze, and present federal regulations data. All external traffic is routed through an Nginx reverse proxy.
 
 ## Core Services
+
+### Nginx Reverse Proxy (Port 8080)
+- **Main entry point for all traffic**
+- Routes requests to appropriate services
+- Handles static asset serving
+- Provides unified access point
 
 ### Frontend (Port 3000)
 - **Next.js React application** 
 - Provides user interface for search, browsing, and analysis
-- Communicates only with Backend API
+- Accessed via Nginx proxy
 
 ### Backend API (Port 3001)
 - **Express.js REST API**
-- Central gateway for all client requests
+- Central gateway for all API requests
 - Integrates with Gemini (chat) and Grok (analysis) APIs
-- Manages service orchestration
+- Accessed via Nginx proxy at /api/*
 
 ### Data Refresh Service
 - **Automated XML processor**
@@ -51,6 +57,8 @@ The eCFR Navigator uses a microservices architecture with four Docker containers
 ## Data Flow
 
 ```
+                           Nginx (8080)
+                               ↓
 govinfo.gov → Data Refresh → MongoDB → Data Analysis → AI APIs
                     ↓            ↓           ↓
                    XML      Elasticsearch   Metrics
@@ -59,6 +67,15 @@ govinfo.gov → Data Refresh → MongoDB → Data Analysis → AI APIs
                               ↓
                           Frontend
 ```
+
+## Access Points
+
+- **Main Application**: http://localhost:8080 (via Nginx)
+- **Direct Service Access** (development only):
+  - Frontend: http://localhost:3000
+  - Backend API: http://localhost:3001
+  - MongoDB: localhost:27017
+  - Elasticsearch: http://localhost:9200
 
 ## External Integrations
 

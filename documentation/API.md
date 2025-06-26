@@ -1,6 +1,11 @@
 # eCFR Navigator API Documentation
 
-Base URL: `http://localhost:3001/api`
+## Access Points
+
+- **Via Nginx (recommended)**: `http://localhost:8080/api`
+- **Direct access**: `http://localhost:3001/api`
+
+Note: In production, all API requests should go through the Nginx reverse proxy on port 8080. The direct port 3001 is for development/debugging only.
 
 ## Endpoints
 

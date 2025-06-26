@@ -9,11 +9,18 @@ The eCFR Navigator is a microservices-based application designed to download, pa
 ## Architecture Diagram
 
 ```
+                         ┌─────────────────┐
+                         │      Nginx      │
+                         │   Port 8080     │
+                         └────────┬────────┘
+                                  │
+                     ┌────────────┴────────────┐
+                     ▼                         ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
 │  Frontend       │────▶│  Backend API    │◀────│  External APIs  │
 │  (Next.js)      │     │  (Express)      │     │  (Grok/Gemini)  │
-│                 │     │                 │     │                 │
+│  Port 3000      │     │  Port 3001      │     │                 │
 └─────────────────┘     └────────┬────────┘     └─────────────────┘
                                  │
                     ┌────────────┴────────────┐
@@ -21,7 +28,7 @@ The eCFR Navigator is a microservices-based application designed to download, pa
               ┌─────▼─────┐           ┌──────▼──────┐
               │           │           │             │
               │  MongoDB  │           │Elasticsearch│
-              │           │           │             │
+              │Port 27017 │           │ Port 9200   │
               └─────▲─────┘           └──────▲──────┘
                     │                         │
         ┌───────────┴─────────────────────────┴───────────┐
@@ -43,7 +50,23 @@ The eCFR Navigator is a microservices-based application designed to download, pa
 
 ## Core Services
 
-### 1. Frontend Service (Port 3000)
+### 1. Nginx Reverse Proxy (Port 8080)
+
+**Technology**: Nginx
+
+**Responsibilities**:
+- Single entry point for all HTTP traffic
+- Request routing to appropriate services
+- Load balancing (future)
+- SSL termination (future)
+- Static asset caching
+
+**Routing Rules**:
+- `/api/*` → Backend API (port 3001)
+- `/_next/*` → Frontend static assets
+- `/` → Frontend application (port 3000)
+
+### 2. Frontend Service (Port 3000)
 
 **Technology**: Next.js 14, React 18, Material-UI 5, TypeScript
 

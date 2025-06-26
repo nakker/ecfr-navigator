@@ -25,6 +25,20 @@ If build fails due to missing packages:
 docker-compose build [service-name]
 ```
 
+## Access Issues
+
+### Cannot access application
+1. Ensure you're using the correct URL: http://localhost:8080
+2. Check if Nginx is running:
+```bash
+docker-compose ps nginx
+```
+3. Verify port 8080 is not already in use:
+```bash
+lsof -i :8080  # On Linux/Mac
+netstat -an | findstr :8080  # On Windows
+```
+
 ## Runtime Issues
 
 ### MongoDB Connection Failed
@@ -39,17 +53,48 @@ docker-compose logs mongodb
 docker-compose exec mongodb mongosh -u $MONGO_ROOT_USERNAME -p $MONGO_ROOT_PASSWORD
 ```
 
-### OpenSearch Not Responding
+### Elasticsearch Not Responding
 ```bash
-# Check OpenSearch health
+# Check Elasticsearch health
 curl -X GET "localhost:9200/_cluster/health?pretty"
 
-# View OpenSearch logs
-docker-compose logs opensearch
+# View Elasticsearch logs
+docker-compose logs elasticsearch
 
 # Check if index exists
 curl -X GET "localhost:9200/_cat/indices?v"
 ```
+
+### Nginx Issues
+
+#### Application not accessible on port 8080
+```bash
+# Check Nginx status
+docker-compose ps nginx
+
+# View Nginx logs
+docker-compose logs nginx
+
+# Test Nginx configuration
+docker-compose exec nginx nginx -t
+```
+
+#### 502 Bad Gateway errors
+This usually means the backend service is not responding:
+```bash
+# Check backend service
+docker-compose ps backend
+docker-compose logs backend
+
+# Restart backend
+docker-compose restart backend
+```
+
+#### 504 Gateway Timeout
+If requests are timing out:
+1. Check if backend is overwhelmed
+2. Consider increasing Nginx timeout settings in nginx.conf
+3. Check database connections
 
 ### Frontend Build Errors
 Common issues and solutions:

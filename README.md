@@ -57,26 +57,32 @@ docker-compose up -d --build
 docker-compose logs -f data-refresh
 ```
 
-5. Access the application at http://localhost:3000
+5. Access the application at http://localhost:8080
 
 ### Note on Build Time
 The initial build may take 5-10 minutes. Initial data download will take 30-60 minutes.
 
 ## Architecture
 
-The eCFR Navigator uses a microservices architecture with four main services:
+The eCFR Navigator uses a microservices architecture with the following components:
 
+- **Nginx**: Reverse proxy routing traffic on port 8080
 - **Frontend**: Next.js React application with Material-UI
 - **Backend API**: Express.js REST API server
 - **Data Refresh**: Downloads and parses eCFR XML data
 - **Data Analysis**: Generates metrics and AI-powered insights
+- **MongoDB**: Document database for storing regulations and metrics
+- **Elasticsearch**: Full-text search engine for fast content queries
 
 ## Access Points
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:3001
+- **Main Application**: http://localhost:8080 (via Nginx)
+- **Frontend** (direct): http://localhost:3000
+- **Backend API** (direct): http://localhost:3001
 - **MongoDB**: localhost:27017
 - **Elasticsearch**: http://localhost:9200
+
+Note: For normal usage, access the application through Nginx at port 8080. Direct service ports are provided for development/debugging.
 
 ## Service Documentation
 

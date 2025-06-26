@@ -80,9 +80,30 @@ docker-compose ps
 # View logs
 docker-compose logs -f
 
-# Check health endpoints
+# Access the application via Nginx
+open http://localhost:8080
+
+# Check health endpoints (via Nginx)
+curl http://localhost:8080/api/health
+
+# Or check services directly (development only)
 curl http://localhost:3001/health
 curl http://localhost:3005/health
+```
+
+### 5. Nginx Configuration
+
+The application uses Nginx as a reverse proxy on port 8080:
+
+```bash
+# View Nginx logs
+docker-compose logs nginx
+
+# Check Nginx configuration
+docker-compose exec nginx nginx -t
+
+# Reload Nginx after config changes
+docker-compose exec nginx nginx -s reload
 ```
 
 ## Development Workflow
@@ -175,8 +196,8 @@ npm run type-check
 ### Data Refresh Service
 
 ```bash
-# Trigger manual refresh for a title
-curl -X POST http://localhost:3001/api/services/data-refresh/trigger-title \
+# Trigger manual refresh for a title (via Nginx)
+curl -X POST http://localhost:8080/api/services/data-refresh/trigger-title \
   -H "Content-Type: application/json" \
   -d '{"titleNumber": 29}'
 
@@ -187,14 +208,14 @@ docker-compose logs -f data-refresh
 ### Data Analysis Service
 
 ```bash
-# Check thread status
-curl http://localhost:3001/api/analysis-threads/status
+# Check thread status (via Nginx)
+curl http://localhost:8080/api/analysis-threads/status
 
 # Start specific thread
-curl -X POST http://localhost:3001/api/analysis-threads/section_analysis/start
+curl -X POST http://localhost:8080/api/analysis-threads/section_analysis/start
 
 # View analysis results
-curl http://localhost:3001/api/analysis/stats
+curl http://localhost:8080/api/analysis/stats
 ```
 
 ## Code Organization

@@ -34,12 +34,22 @@
    Note: Initial download may take 30-60 minutes depending on your internet speed.
 
 5. **Access the application:**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:3001
+   - Main Application (via Nginx): http://localhost:8080
+   - Frontend (direct): http://localhost:3000
+   - Backend API (direct): http://localhost:3001
+   
+   Note: Always use the Nginx endpoint (port 8080) for production access.
 
 ## Service Architecture
 
 ```
+                        ┌─────────────────┐
+                        │      Nginx      │
+                        │   (Port 8080)   │
+                        └────────┬────────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    ▼                         ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │    Frontend     │────▶│   Backend API   │────▶│    MongoDB      │
 │   (Next.js)     │     │   (Express)     │     │                 │
@@ -93,6 +103,29 @@ docker-compose down -v
 ```bash
 docker-compose pull
 docker-compose up -d --build
+```
+
+## Nginx Configuration
+
+The Nginx reverse proxy handles all incoming traffic on port 8080 and routes it to the appropriate services:
+
+- `/api/*` → Backend API (port 3001)
+- `/_next/*` → Frontend static assets
+- `/` → Frontend application (port 3000)
+
+### View Nginx logs:
+```bash
+docker-compose logs nginx
+```
+
+### Reload Nginx configuration:
+```bash
+docker-compose exec nginx nginx -s reload
+```
+
+### Test Nginx configuration:
+```bash
+docker-compose exec nginx nginx -t
 ```
 
 ## Troubleshooting

@@ -1,5 +1,6 @@
 const { parentPort, workerData } = require('worker_threads');
 const mongoose = require('mongoose');
+const { connectToMongoDB } = require('./mongoConnection');
 const Title = require('../../shared/models/Title');
 const Document = require('../../shared/models/Document');
 const Metric = require('../../shared/models/Metric');
@@ -19,17 +20,34 @@ parentPort.on('message', (message) => {
 
 async function run() {
   try {
-    // Connect to MongoDB
-    await mongoose.connect(workerData.mongoUri);
+    // Connect to MongoDB with better error handling
+    await connectToMongoDB(workerData.mongoUri, 'text_metrics');
+    
+    // Wait a bit to ensure connection is stable
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Initialize GridFS
     initGridFS();
     
     const textAnalyzer = new TextAnalyzer();
-    const thread = await AnalysisThread.findOne({ threadType: workerData.threadType });
+    
+    // Retry logic for database queries
+    let thread;
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        thread = await AnalysisThread.findOne({ threadType: workerData.threadType });
+        break;
+      } catch (error) {
+        retries--;
+        if (retries === 0) throw error;
+        console.log(`Retrying AnalysisThread query, ${retries} attempts left...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
     
     // Get resume position if not restarting
-    if (!workerData.restart && thread.resumeData) {
+    if (!workerData.restart && thread && thread.resumeData) {
       currentTitleIndex = thread.resumeData.lastTitleIndex || 0;
     }
 

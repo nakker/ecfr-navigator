@@ -23,7 +23,8 @@ import {
   ChevronRight as ChevronRightIcon,
   Stop as StopIcon,
 } from '@mui/icons-material';
-import axios, { CancelTokenSource } from 'axios';
+import axios from 'axios';
+import type { CancelTokenSource } from 'axios';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';

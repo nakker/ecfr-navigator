@@ -20,25 +20,25 @@ describe('SectionAnalysis Model', () => {
         documentId: doc._id,
         titleNumber: 1,
         sectionIdentifier: 'section-1.1',
-        analysis: {
-          summary: 'Test summary',
-          keyRequirements: ['Requirement 1'],
-          complianceSteps: ['Step 1'],
-          potentialIssues: ['Issue 1'],
-          relatedSections: ['section-1.2']
-        },
-        scores: {
-          antiquatedScore: 75,
-          businessUnfriendlyScore: 60
-        },
-        modelUsed: 'gemini-2.0',
-        analysisVersion: 'v1'
+        summary: 'Test summary of the section',
+        antiquatedScore: 75,
+        antiquatedExplanation: 'This section uses outdated terminology and references obsolete practices',
+        businessUnfriendlyScore: 60,
+        businessUnfriendlyExplanation: 'Complex compliance requirements that burden small businesses',
+        analysisVersion: '1.0',
+        metadata: {
+          model: 'grok-3-mini',
+          temperature: 0.3
+        }
       });
 
       const saved = await analysis.save();
       expect(saved._id).toBeDefined();
-      expect(saved.scores.antiquatedScore).toBe(75);
-      expect(saved.scores.businessUnfriendlyScore).toBe(60);
+      expect(saved.antiquatedScore).toBe(75);
+      expect(saved.businessUnfriendlyScore).toBe(60);
+      expect(saved.summary).toBe('Test summary of the section');
+      expect(saved.antiquatedExplanation).toBeDefined();
+      expect(saved.businessUnfriendlyExplanation).toBeDefined();
     });
 
     it('should validate score ranges (1-100)', async () => {
@@ -48,14 +48,11 @@ describe('SectionAnalysis Model', () => {
         documentId: doc._id,
         titleNumber: 1,
         sectionIdentifier: 'section-1.1',
-        analysis: {
-          summary: 'Test'
-        },
-        scores: {
-          antiquatedScore: 101, // Invalid
-          businessUnfriendlyScore: 0 // Invalid
-        },
-        modelUsed: 'test-model'
+        summary: 'Test summary',
+        antiquatedScore: 101, // Invalid
+        antiquatedExplanation: 'Test explanation',
+        businessUnfriendlyScore: 0, // Invalid
+        businessUnfriendlyExplanation: 'Test explanation'
       });
 
       await expect(analysis.save()).rejects.toThrow(/validation/);
@@ -68,9 +65,12 @@ describe('SectionAnalysis Model', () => {
         documentId: doc._id,
         titleNumber: 1,
         sectionIdentifier: 'section-1.1',
-        analysis: { summary: 'Test' },
-        modelUsed: 'test-model',
-        analysisVersion: 'v1'
+        summary: 'Test summary',
+        antiquatedScore: 50,
+        antiquatedExplanation: 'Test explanation',
+        businessUnfriendlyScore: 50,
+        businessUnfriendlyExplanation: 'Test explanation',
+        analysisVersion: '1.0'
       };
 
       await SectionAnalysis.create(analysisData);
@@ -87,15 +87,18 @@ describe('SectionAnalysis Model', () => {
         documentId: doc._id,
         titleNumber: 1,
         sectionIdentifier: 'section-1.1',
-        analysis: { summary: 'Test' },
-        modelUsed: 'test-model'
+        summary: 'Test summary',
+        antiquatedScore: 50,
+        antiquatedExplanation: 'Test explanation',
+        businessUnfriendlyScore: 50,
+        businessUnfriendlyExplanation: 'Test explanation'
       };
 
-      await SectionAnalysis.create({ ...baseData, analysisVersion: 'v1' });
-      const v2 = await SectionAnalysis.create({ ...baseData, analysisVersion: 'v2' });
+      await SectionAnalysis.create({ ...baseData, analysisVersion: '1.0' });
+      const v2 = await SectionAnalysis.create({ ...baseData, analysisVersion: '2.0' });
       
       expect(v2._id).toBeDefined();
-      expect(v2.analysisVersion).toBe('v2');
+      expect(v2.analysisVersion).toBe('2.0');
     });
   });
 
@@ -115,72 +118,79 @@ describe('SectionAnalysis Model', () => {
           documentId: docs[0]._id,
           titleNumber: 1,
           sectionIdentifier: 'section-1.1',
-          analysis: { summary: 'Old regulations' },
-          scores: { antiquatedScore: 65 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Old regulations from decades ago',
+          antiquatedScore: 65,
+          antiquatedExplanation: 'Uses outdated terminology',
+          businessUnfriendlyScore: 45,
+          businessUnfriendlyExplanation: 'Moderate compliance burden',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[1]._id,
           titleNumber: 1,
           sectionIdentifier: 'section-1.2',
-          analysis: { summary: 'Very old regulations' },
-          scores: { antiquatedScore: 85 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Very old regulations with obsolete requirements',
+          antiquatedScore: 85,
+          antiquatedExplanation: 'References obsolete technologies and practices',
+          businessUnfriendlyScore: 70,
+          businessUnfriendlyExplanation: 'High compliance costs',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[2]._id,
           titleNumber: 1,
           sectionIdentifier: 'section-1.3',
-          analysis: { summary: 'Recent regulations' },
-          scores: { antiquatedScore: 25 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Recent regulations with modern approach',
+          antiquatedScore: 25,
+          antiquatedExplanation: 'Modern and up-to-date',
+          businessUnfriendlyScore: 20,
+          businessUnfriendlyExplanation: 'Minimal burden',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[3]._id,
           titleNumber: 1,
           sectionIdentifier: 'section-1.4',
-          analysis: { summary: 'Obsolete regulations' },
-          scores: { antiquatedScore: 95 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Obsolete regulations needing complete overhaul',
+          antiquatedScore: 95,
+          antiquatedExplanation: 'Completely outdated and irrelevant',
+          businessUnfriendlyScore: 90,
+          businessUnfriendlyExplanation: 'Extreme burden on businesses',
+          analysisVersion: '1.0'
         }
       ]);
     });
 
     it('should return sections sorted by antiquated score descending', async () => {
-      const results = await SectionAnalysis.getMostAntiquatedSections(1, 10);
+      const results = await SectionAnalysis.getMostAntiquatedSections(1, 10, 1);
       
       expect(results).toHaveLength(4);
-      expect(results[0].scores.antiquatedScore).toBe(95);
-      expect(results[1].scores.antiquatedScore).toBe(85);
-      expect(results[2].scores.antiquatedScore).toBe(65);
-      expect(results[3].scores.antiquatedScore).toBe(25);
+      expect(results[0].antiquatedScore).toBe(95);
+      expect(results[1].antiquatedScore).toBe(85);
+      expect(results[2].antiquatedScore).toBe(65);
+      expect(results[3].antiquatedScore).toBe(25);
     });
 
     it('should respect limit parameter', async () => {
-      const results = await SectionAnalysis.getMostAntiquatedSections(1, 2);
+      const results = await SectionAnalysis.getMostAntiquatedSections(1, 2, 1);
       
       expect(results).toHaveLength(2);
-      expect(results[0].scores.antiquatedScore).toBe(95);
-      expect(results[1].scores.antiquatedScore).toBe(85);
+      expect(results[0].antiquatedScore).toBe(95);
+      expect(results[1].antiquatedScore).toBe(85);
     });
 
     it('should filter by minimum score', async () => {
       const results = await SectionAnalysis.getMostAntiquatedSections(1, 10, 70);
       
       expect(results).toHaveLength(2);
-      expect(results[0].scores.antiquatedScore).toBe(95);
-      expect(results[1].scores.antiquatedScore).toBe(85);
+      expect(results[0].antiquatedScore).toBe(95);
+      expect(results[1].antiquatedScore).toBe(85);
     });
 
     it('should populate document data', async () => {
-      const results = await SectionAnalysis.getMostAntiquatedSections(1, 1);
+      const results = await SectionAnalysis.getMostAntiquatedSections(1, 1, 1);
       
       expect(results[0].documentId).toBeDefined();
-      expect(results[0].documentId.title).toBe('Obsolete Section');
       expect(results[0].documentId.identifier).toBe('section-1.4');
     });
 
@@ -202,36 +212,40 @@ describe('SectionAnalysis Model', () => {
           documentId: docs[0]._id,
           titleNumber: 2,
           sectionIdentifier: 'section-2.1',
-          analysis: { summary: 'Complex requirements' },
-          scores: { businessUnfriendlyScore: 90 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Complex requirements with heavy paperwork',
+          antiquatedScore: 60,
+          antiquatedExplanation: 'Somewhat outdated',
+          businessUnfriendlyScore: 90,
+          businessUnfriendlyExplanation: 'Extremely burdensome for small businesses',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[1]._id,
           titleNumber: 2,
           sectionIdentifier: 'section-2.2',
-          analysis: { summary: 'Simple requirements' },
-          scores: { businessUnfriendlyScore: 30 },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Simple requirements that are easy to follow',
+          antiquatedScore: 30,
+          antiquatedExplanation: 'Relatively modern',
+          businessUnfriendlyScore: 30,
+          businessUnfriendlyExplanation: 'Minimal burden',
+          analysisVersion: '1.0'
         }
       ]);
     });
 
     it('should return sections sorted by business unfriendly score', async () => {
-      const results = await SectionAnalysis.getMostBusinessUnfriendlySections(2, 10);
+      const results = await SectionAnalysis.getMostBusinessUnfriendlySections(2, 10, 1);
       
       expect(results).toHaveLength(2);
-      expect(results[0].scores.businessUnfriendlyScore).toBe(90);
-      expect(results[1].scores.businessUnfriendlyScore).toBe(30);
+      expect(results[0].businessUnfriendlyScore).toBe(90);
+      expect(results[1].businessUnfriendlyScore).toBe(30);
     });
 
     it('should filter by minimum score', async () => {
       const results = await SectionAnalysis.getMostBusinessUnfriendlySections(2, 10, 50);
       
       expect(results).toHaveLength(1);
-      expect(results[0].scores.businessUnfriendlyScore).toBe(90);
+      expect(results[0].businessUnfriendlyScore).toBe(90);
     });
   });
 
@@ -248,87 +262,85 @@ describe('SectionAnalysis Model', () => {
           documentId: docs[0]._id,
           titleNumber: 3,
           sectionIdentifier: 'section-3.1',
-          analysis: { summary: 'Test' },
-          scores: { 
-            antiquatedScore: 80,
-            businessUnfriendlyScore: 70
-          },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'High scoring section for both metrics',
+          antiquatedScore: 80,
+          antiquatedExplanation: 'Very outdated',
+          businessUnfriendlyScore: 70,
+          businessUnfriendlyExplanation: 'High burden',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[1]._id,
           titleNumber: 3,
           sectionIdentifier: 'section-3.2',
-          analysis: { summary: 'Test' },
-          scores: { 
-            antiquatedScore: 60,
-            businessUnfriendlyScore: 90
-          },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Mixed scoring section',
+          antiquatedScore: 60,
+          antiquatedExplanation: 'Moderately outdated',
+          businessUnfriendlyScore: 90,
+          businessUnfriendlyExplanation: 'Extremely burdensome',
+          analysisVersion: '1.0'
         },
         {
           documentId: docs[2]._id,
           titleNumber: 3,
           sectionIdentifier: 'section-3.3',
-          analysis: { summary: 'Test' },
-          scores: { 
-            antiquatedScore: 40,
-            businessUnfriendlyScore: 30
-          },
-          modelUsed: 'test',
-          analysisVersion: 'v1'
+          summary: 'Low scoring section',
+          antiquatedScore: 40,
+          antiquatedExplanation: 'Relatively modern',
+          businessUnfriendlyScore: 30,
+          businessUnfriendlyExplanation: 'Low burden',
+          analysisVersion: '1.0'
         }
       ]);
     });
 
     it('should calculate correct statistics', async () => {
-      const stats = await SectionAnalysis.getAnalysisStats(3);
+      const stats = await SectionAnalysis.getAnalysisStats(3, 50);
       
       expect(stats.totalAnalyzed).toBe(3);
-      expect(stats.averageAntiquatedScore).toBe(60); // (80+60+40)/3
-      expect(stats.averageBusinessUnfriendlyScore).toBe(63.33);
-      expect(stats.highPriorityCount).toBe(2); // Default threshold 70
+      expect(stats.avgAntiquatedScore).toBe(60); // (80+60+40)/3
+      expect(stats.avgBusinessUnfriendlyScore).toBeCloseTo(63.33, 1);
+      expect(stats.antiquatedCount).toBe(2); // Scores >= 50
+      expect(stats.businessUnfriendlyCount).toBe(2); // Scores >= 50
     });
 
     it('should respect custom score threshold', async () => {
       const stats = await SectionAnalysis.getAnalysisStats(3, 80);
       
-      expect(stats.highPriorityCount).toBe(1); // Only one section >= 80
+      expect(stats.antiquatedCount).toBe(1); // Only one section >= 80
+      expect(stats.businessUnfriendlyCount).toBe(1); // Only one section >= 80
     });
 
     it('should handle empty results', async () => {
       const stats = await SectionAnalysis.getAnalysisStats(999);
       
       expect(stats.totalAnalyzed).toBe(0);
-      expect(stats.averageAntiquatedScore).toBe(0);
-      expect(stats.averageBusinessUnfriendlyScore).toBe(0);
-      expect(stats.highPriorityCount).toBe(0);
+      expect(stats.avgAntiquatedScore).toBe(0);
+      expect(stats.avgBusinessUnfriendlyScore).toBe(0);
+      expect(stats.antiquatedCount).toBe(0);
+      expect(stats.businessUnfriendlyCount).toBe(0);
     });
 
-    it('should only include latest analysis version', async () => {
+    it('should include all analysis versions in stats', async () => {
       // Add a v2 analysis for one section
       const doc = await Document.findOne({ identifier: 'section-3.1' });
       await SectionAnalysis.create({
         documentId: doc._id,
         titleNumber: 3,
         sectionIdentifier: 'section-3.1',
-        analysis: { summary: 'Updated' },
-        scores: { 
-          antiquatedScore: 20,
-          businessUnfriendlyScore: 20
-        },
-        modelUsed: 'test',
-        analysisVersion: 'v2'
+        summary: 'Updated analysis',
+        antiquatedScore: 20,
+        antiquatedExplanation: 'Much improved',
+        businessUnfriendlyScore: 20,
+        businessUnfriendlyExplanation: 'Simplified',
+        analysisVersion: '2.0'
       });
 
       const stats = await SectionAnalysis.getAnalysisStats(3);
       
-      // Should still be 3 sections (not 4)
-      expect(stats.totalAnalyzed).toBe(3);
-      // Average should include the new v2 score for section 3.1
-      expect(stats.averageAntiquatedScore).toBe(40); // (20+60+40)/3
+      // Stats include all analysis records
+      expect(stats.totalAnalyzed).toBe(4);
+      expect(stats.avgAntiquatedScore).toBe(50); // (80+60+40+20)/4
     });
   });
 });

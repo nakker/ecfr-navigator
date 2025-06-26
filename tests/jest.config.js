@@ -50,7 +50,7 @@ module.exports = {
   ],
   
   // Setup files
-  setupFilesAfterEnv: ['<rootDir>/tests/utils/setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/utils/setup-minimal.js'],
   
   // Timeout
   testTimeout: 30000,

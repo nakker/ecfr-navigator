@@ -10,6 +10,7 @@ services=("backend" "frontend" "data-refresh" "data-analysis")
 for service in "${services[@]}"; do
     echo "Syncing to $service..."
     rm -rf "services/$service/shared"
+    echo "Copying to $service..."
     cp -r "services/shared" "services/$service/"
 done
 

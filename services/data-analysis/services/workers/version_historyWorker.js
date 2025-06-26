@@ -1,5 +1,6 @@
 const { parentPort, workerData } = require('worker_threads');
 const mongoose = require('mongoose');
+const { connectToMongoDB } = require('./mongoConnection');
 const axios = require('axios');
 const Title = require('../../shared/models/Title');
 const VersionHistory = require('../../shared/models/VersionHistory');
@@ -76,7 +77,10 @@ async function fetchVersionHistory(titleNumber) {
 async function run() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(workerData.mongoUri);
+    await connectToMongoDB(workerData.mongoUri, 'version_history');
+    
+    // Add a 1 second delay after connection
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     const thread = await AnalysisThread.findOne({ threadType: workerData.threadType });
     

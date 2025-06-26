@@ -11,7 +11,8 @@ describe('Documents API Integration Tests', () => {
   let gridFSBucket;
 
   beforeAll(async () => {
-    await DatabaseHelper.connectMongo(process.env.MONGODB_URI);
+    const mongoUri = `mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@localhost:27017/${process.env.MONGO_DATABASE}?authSource=admin`;
+    await DatabaseHelper.connectMongo(mongoUri);
     
     // Set up GridFS
     gridFSBucket = new GridFSBucket(mongoose.connection.db, {

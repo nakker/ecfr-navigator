@@ -1,5 +1,6 @@
 const { parentPort, workerData } = require('worker_threads');
 const mongoose = require('mongoose');
+const { connectToMongoDB } = require('./mongoConnection');
 const Title = require('../../shared/models/Title');
 const Document = require('../../shared/models/Document');
 const Metric = require('../../shared/models/Metric');
@@ -55,7 +56,10 @@ async function analyzeRegulationAges(versionHistory) {
 async function run() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(workerData.mongoUri);
+    await connectToMongoDB(workerData.mongoUri, 'age_distribution');
+    
+    // Add a 1 second delay after connection
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     const thread = await AnalysisThread.findOne({ threadType: workerData.threadType });
     

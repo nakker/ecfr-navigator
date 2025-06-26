@@ -22,18 +22,9 @@ class TestDataBuilder {
       titleNumber: 1,
       identifier: 'test-doc-1',
       type: 'part',
-      label: 'Part 1',
-      title: 'Test Document',
+      heading: 'Test Document',
       content: 'This is test content for analysis.',
-      hierarchy: {
-        title: 1,
-        subtitle: null,
-        chapter: null,
-        subchapter: null,
-        part: '1',
-        subpart: null,
-        section: null
-      },
+      part: '1',
       effectiveDate: new Date(),
       lastModified: new Date(),
       ...overrides
@@ -188,6 +179,24 @@ class ApiTestHelper {
   }
 }
 
+// Test database setup/teardown helpers
+async function setupTestDatabase() {
+  const mongoUri = `mongodb://${process.env.MONGO_ROOT_USERNAME}:${process.env.MONGO_ROOT_PASSWORD}@localhost:27017/${process.env.MONGO_DATABASE}?authSource=admin`;
+  
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+  }
+}
+
+async function teardownTestDatabase() {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+}
+
 // Wait helper
 function waitFor(condition, timeout = 5000, interval = 100) {
   return new Promise((resolve, reject) => {
@@ -221,5 +230,7 @@ module.exports = {
   DatabaseHelper,
   ElasticsearchHelper,
   ApiTestHelper,
-  waitFor
+  waitFor,
+  setupTestDatabase,
+  teardownTestDatabase
 };

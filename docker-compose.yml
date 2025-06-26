@@ -1,4 +1,20 @@
 services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: ecfr-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - frontend
+      - backend
+      - data-analysis
+      - data-refresh
+    networks:
+      - ecfr-network
+
   mongodb:
     image: mongo:7.0
     container_name: ecfr-mongodb
@@ -44,8 +60,8 @@ services:
       dockerfile: backend/Dockerfile
     container_name: ecfr-backend
     restart: unless-stopped
-    ports:
-      - "${BACKEND_PORT:-3001}:3001"
+    expose:
+      - "3001"
     environment:
       NODE_ENV: production
       PORT: 3001
@@ -68,12 +84,11 @@ services:
       dockerfile: frontend/Dockerfile
     container_name: ecfr-frontend
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+    expose:
+      - "3000"
     environment:
       NODE_ENV: production
       PORT: 3000
-      REACT_APP_API_URL: http://backend:3001
       NEXT_PUBLIC_CHAT_SYSTEM_PROMPT: ${CHAT_SYSTEM_PROMPT}
       NEXT_PUBLIC_CHAT_DEFAULT_MODEL: ${CHAT_DEFAULT_MODEL}
       NEXT_PUBLIC_CHAT_TIMEOUT_SECONDS: ${CHAT_TIMEOUT_SECONDS}
@@ -88,8 +103,8 @@ services:
       dockerfile: data-refresh/Dockerfile
     container_name: ecfr-data-refresh
     restart: "no"
-    ports:
-      - "3005:3005"  # Health check port
+    expose:
+      - "3005"  # Health check port
     environment:
       NODE_ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-info}
@@ -113,8 +128,8 @@ services:
       dockerfile: data-analysis/Dockerfile
     container_name: ecfr-data-analysis
     restart: unless-stopped
-    ports:
-      - "3003:3003"  # Internal API port for thread management
+    expose:
+      - "3003"  # Internal API port for thread management
     environment:
       NODE_ENV: production
       LOG_LEVEL: ${LOG_LEVEL:-info}

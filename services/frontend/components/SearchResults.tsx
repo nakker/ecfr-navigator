@@ -13,6 +13,7 @@ import {
   Pagination,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import Link from 'next/link';
@@ -46,9 +47,14 @@ export default function SearchResults({ searchParams, onClose }: SearchResultsPr
   return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5">
-          Search Results {data && `(${data.total} found)`}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton onClick={onClose} color="primary" sx={{ bgcolor: 'action.hover' }}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h5">
+            Search Results {data && `(${data.total} found)`}
+          </Typography>
+        </Box>
         <IconButton onClick={onClose}>
           <CloseIcon />
         </IconButton>

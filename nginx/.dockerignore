@@ -1,0 +1,4 @@
+# Ignore everything except what we need
+*
+!nginx.conf
+!Dockerfile
